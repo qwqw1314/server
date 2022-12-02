@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -19,5 +20,9 @@ func main() {
 }
 
 func fromAgent(c echo.Context) error {
-	return c.String(http.StatusOK, "From Agent")
+	body, err := ioutil.ReadAll(c.Request().Body)
+	if err != nil {
+		return c.String(http.StatusNotFound, "Failed")
+	}
+	return c.String(http.StatusOK, string(body))
 }
