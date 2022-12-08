@@ -26,7 +26,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.POST("/agent", fromAgent)
+	e.POST("/", fromAgent)
 
 	e.Logger.Fatal(e.Start(":5678"))
 }
