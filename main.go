@@ -39,7 +39,7 @@ func fromAgent(c echo.Context) error {
 	}
 	host := string(body)
 
-	dsn := "host=10.2.13.132 user=admin password=admin dbname=postgresdb port=5432"
+	dsn := "host=postgres.default.svc user=admin password=admin dbname=postgresdb port=5432"
         db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
                 Logger: logger.Default.LogMode(logger.Info),
         })
@@ -66,7 +66,7 @@ func fromAgent(c echo.Context) error {
 }
 
 func fromCppm(c echo.Context) error {
-	dsn := "host=10.2.13.132 user=admin password=admin dbname=postgresdb port=5432"
+	dsn := "host=postgres.default.svc user=admin password=admin dbname=postgresdb port=5432"
         db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
                 Logger: logger.Default.LogMode(logger.Info),
         })
