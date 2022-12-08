@@ -27,6 +27,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.POST("/", fromAgent)
+	e.GET("/", fromCppm)
 
 	e.Logger.Fatal(e.Start(":5678"))
 }
@@ -42,6 +43,9 @@ func fromAgent(c echo.Context) error {
         db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
                 Logger: logger.Default.LogMode(logger.Info),
         })
+	sqlDB, _ := db.DB()
+	defer sqlDB.Close()
+
         if err != nil {
                 panic(err)
         }
@@ -58,5 +62,33 @@ func fromAgent(c echo.Context) error {
 		db.Create(&Ips{IP: ip, Hostname: hostname})
 	}
 
+	return c.String(http.StatusOK, string(body))
+}
+
+func fromCppm(c echo.Context) error {
+	dsn := "host=10.2.13.132 user=admin password=admin dbname=postgresdb port=5432"
+        db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+                Logger: logger.Default.LogMode(logger.Info),
+        })
+        if err != nil {
+                panic(err)
+        }
+	sqlDB, _ := db.DB()
+	defer sqlDB.Close()
+
+	db.AutoMigrate(&Ips{})
+
+	iptable := []Ips{}
+
+        result := db.Find(&iptable)
+
+	var body string
+
+        if result.RowsAffected != 0 {
+	        for _, ip := range iptable {
+               		body += ip.IP + " "
+			body += ip.Hostname + "\n"
+        	}
+	}
 	return c.String(http.StatusOK, string(body))
 }
